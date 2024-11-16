@@ -28,16 +28,17 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 40),
                 // App Logo
                 Container(
-                  width: 100,
-                  height: 100,
+                  width: 120,
+                  height: 120,
                   decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(
-                    Icons.analytics_outlined,
-                    color: Colors.white,
-                    size: 50,
+                  child: Image.asset(
+                    'assets/images/ceylon_logo.png',
+                    width: double.infinity,
+                    color: Colors.white, // If you want the logo to be white
+                    fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -156,12 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             children: [
                               const SizedBox(height: 55),
-                              Image.asset(
-                                'assets/images/ceylon_logo.png',
-                                width: double.infinity,
-                                color: Colors.white, // If you want the logo to be white
-                                fit: BoxFit.contain,
-                              ),
+
                               const SizedBox(height: 25),
                               // Lion Logo Section
                               Image.asset(

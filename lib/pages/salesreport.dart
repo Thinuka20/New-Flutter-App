@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
@@ -104,6 +105,10 @@ class _SalesReportPageState extends State<SalesReportPage> {
   Future<void> _generatePDF() async {
     setState(() => isLoading = true);
     try {
+      final imageBytes = await rootBundle.load('assets/images/skynet_pro.jpg');
+      final image = pw.MemoryImage(
+        imageBytes.buffer.asUint8List(),
+      );
       final pdf = pw.Document();
       final page = pw.Page(
         pageFormat: PdfPageFormat.a4,
@@ -118,18 +123,10 @@ class _SalesReportPageState extends State<SalesReportPage> {
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text(
-                        'SKYNET PRO',
-                        style: pw.TextStyle(
-                          fontSize: 24,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                      pw.Text(
-                        'DISTRIBUTED ERP',
-                        style: const pw.TextStyle(
-                          fontSize: 12,
-                        ),
+                      pw.Image(
+                        image,
+                        width: 150, // Set your desired width
+                        fit: pw.BoxFit.contain,
                       ),
                     ],
                   ),

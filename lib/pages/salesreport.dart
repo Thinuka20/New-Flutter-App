@@ -167,13 +167,13 @@ class _SalesReportPageState extends State<SalesReportPage> {
               pw.SizedBox(height: 20),
               pw.Table(
                 columnWidths: {
-                  0: const pw.FlexColumnWidth(2.5), // Location
-                  1: const pw.FlexColumnWidth(1.8), // Business Type
+                  0: const pw.FlexColumnWidth(2.2), // Location
+                  1: const pw.FlexColumnWidth(1.7), // Business Type
                   2: const pw.FlexColumnWidth(1.7), // Total Sale
-                  3: const pw.FlexColumnWidth(1.5), // Cash
-                  4: const pw.FlexColumnWidth(1.5), // Card
-                  5: const pw.FlexColumnWidth(1.5), // Credit
-                  6: const pw.FlexColumnWidth(1.5), // Advance
+                  3: const pw.FlexColumnWidth(1.6), // Cash
+                  4: const pw.FlexColumnWidth(1.6), // Card
+                  5: const pw.FlexColumnWidth(1.6), // Credit
+                  6: const pw.FlexColumnWidth(1.6), // Advance
                 },
                 children: [
                   // Header Row
@@ -392,8 +392,8 @@ class _SalesReportPageState extends State<SalesReportPage> {
         context: context,
         builder: (context) => Dialog(
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.6,
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height * 0.4,
             child: Column(
               children: [
                 Padding(
@@ -414,49 +414,53 @@ class _SalesReportPageState extends State<SalesReportPage> {
                   ),
                 ),
                 Expanded(
-                  child: PdfPreview(
-                    build: (format) async {
-                      final bytes = await pdf.save();
-
-                      try {
-                        // Save the PDF file
-                        await FileSaver.instance.saveFile(
-                            name: 'sales_report.pdf',
-                            bytes: bytes,
-                            ext: 'pdf',
-                            mimeType: MimeType.pdf);
-
-                        // Show success message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('PDF saved successfully'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      } catch (e) {
-                        // Show error message if saving fails
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error saving PDF: $e'),
-                            backgroundColor: Colors.red,
-                            duration: const Duration(seconds: 3),
-                          ),
-                        );
-                      }
-
-                      return bytes;
-                    },
-                    initialPageFormat: PdfPageFormat.a4,
-                    allowPrinting: true,
-                    allowSharing: true,
-                    canChangePageFormat: false,
-                    canChangeOrientation: false,
-                    maxPageWidth: 700,
-                    actions: const [],
-                    onPrinted: (context) => print('Document printed'),
-                    onShared: (context) => print('Document shared'),
-                    scrollViewDecoration: BoxDecoration(
-                      color: Colors.grey.shade200,
+                  child: InteractiveViewer(
+                    minScale: 0.5,
+                    maxScale: 4.0,
+                    child: PdfPreview(
+                      build: (format) async {
+                        final bytes = await pdf.save();
+                    
+                        try {
+                          // Save the PDF file
+                          await FileSaver.instance.saveFile(
+                              name: 'sales_report.pdf',
+                              bytes: bytes,
+                              ext: 'pdf',
+                              mimeType: MimeType.pdf);
+                    
+                          // Show success message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('PDF saved successfully'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        } catch (e) {
+                          // Show error message if saving fails
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error saving PDF: $e'),
+                              backgroundColor: Colors.red,
+                              duration: const Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                    
+                        return bytes;
+                      },
+                      initialPageFormat: PdfPageFormat.a4,
+                      allowPrinting: true,
+                      allowSharing: true,
+                      canChangePageFormat: false,
+                      canChangeOrientation: false,
+                      maxPageWidth: 700,
+                      actions: const [],
+                      onPrinted: (context) => print('Document printed'),
+                      onShared: (context) => print('Document shared'),
+                      scrollViewDecoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                      ),
                     ),
                   ),
                 ),

@@ -8,6 +8,8 @@ import 'package:printing/printing.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:get/get.dart';
+
 
 class SalesReportPage extends StatefulWidget {
   const SalesReportPage({Key? key}) : super(key: key);
@@ -470,7 +472,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Get.back(),
                   icon: const Icon(Icons.arrow_back,
                       color: Colors.white, size: 24),
                   label: const Text(

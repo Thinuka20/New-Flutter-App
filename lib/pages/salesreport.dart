@@ -10,7 +10,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:get/get.dart';
 
-
 class SalesReportPage extends StatefulWidget {
   const SalesReportPage({Key? key}) : super(key: key);
 
@@ -78,7 +77,8 @@ class _SalesReportPageState extends State<SalesReportPage> {
                 foregroundColor: const Color(0xFF2A2359), // Button text color
               ),
             ),
-            dialogBackgroundColor: Colors.white, // Background color of the dialog
+            dialogBackgroundColor:
+                Colors.white, // Background color of the dialog
           ),
           child: child!,
         );
@@ -131,7 +131,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
       );
       final pdf = pw.Document();
       final page = pw.Page(
-        pageFormat: PdfPageFormat.a4,
+        pageFormat: PdfPageFormat.a4.landscape,
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -166,12 +166,10 @@ class _SalesReportPageState extends State<SalesReportPage> {
               ),
               pw.SizedBox(height: 20),
               pw.Table(
-                border:
-                    pw.TableBorder.all(color: PdfColors.grey), // Add borders
                 columnWidths: {
-                  0: const pw.FlexColumnWidth(2), // Location
-                  1: const pw.FlexColumnWidth(2), // Business Type
-                  2: const pw.FlexColumnWidth(1.5), // Total Sale
+                  0: const pw.FlexColumnWidth(2.5), // Location
+                  1: const pw.FlexColumnWidth(1.8), // Business Type
+                  2: const pw.FlexColumnWidth(1.7), // Total Sale
                   3: const pw.FlexColumnWidth(1.5), // Cash
                   4: const pw.FlexColumnWidth(1.5), // Card
                   5: const pw.FlexColumnWidth(1.5), // Credit
@@ -183,11 +181,11 @@ class _SalesReportPageState extends State<SalesReportPage> {
                     children: [
                       'Location',
                       'Business Type',
-                      'Total Sale',
-                      'Cash',
-                      'Card',
-                      'Credit',
-                      'Advance',
+                      'Total Sale (LKR)',
+                      'Cash (LKR)',
+                      'Card (LKR)',
+                      'Credit (LKR)',
+                      'Advance (LKR)',
                     ]
                         .map((text) => pw.Padding(
                               padding: const pw.EdgeInsets.all(8),
@@ -217,13 +215,16 @@ class _SalesReportPageState extends State<SalesReportPage> {
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
-                          child: pw.Text(type),
+                          child: pw.Text(
+                            type,
+                            style: pw.TextStyle(fontSize: 10), // Added font size for type column
+                          ),
                         ),
                         ...List.generate(
                             5,
                             (index) => pw.Padding(
                                   padding: const pw.EdgeInsets.all(8),
-                                  child: pw.Text('10,000.00',
+                                  child: pw.Text('1,000,000.00',
                                       textAlign: pw.TextAlign.right,
                                       style: pw.TextStyle(fontSize: 9)),
                                 )),
@@ -250,7 +251,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                           (index) => pw.Padding(
                                 padding: const pw.EdgeInsets.all(8),
                                 child: pw.Text(
-                                  '50,000.00',
+                                  '5,000,000.00',
                                   style: pw.TextStyle(
                                       fontWeight: pw.FontWeight.bold,
                                       fontSize: 9),
@@ -279,13 +280,16 @@ class _SalesReportPageState extends State<SalesReportPage> {
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
-                          child: pw.Text(type),
+                          child: pw.Text(
+                            type,
+                            style: pw.TextStyle(fontSize: 10), // Added font size for type column
+                          ),
                         ),
                         ...List.generate(
                             5,
                             (index) => pw.Padding(
                                   padding: const pw.EdgeInsets.all(8),
-                                  child: pw.Text('10,000.00',
+                                  child: pw.Text('1,000,000.00',
                                       textAlign: pw.TextAlign.right,
                                       style: pw.TextStyle(fontSize: 9)),
                                 )),
@@ -312,7 +316,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                           (index) => pw.Padding(
                                 padding: const pw.EdgeInsets.all(8),
                                 child: pw.Text(
-                                  '20,000.00',
+                                  '2,000,000.00',
                                   style: pw.TextStyle(
                                       fontWeight: pw.FontWeight.bold,
                                       fontSize: 9),
@@ -335,17 +339,20 @@ class _SalesReportPageState extends State<SalesReportPage> {
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
-                        child: pw.Text('GRAND TOTAL',
+                        child: pw.Text('GRAND',
                             style: pw.TextStyle(
                                 fontWeight: pw.FontWeight.bold, fontSize: 10)),
                       ),
                       pw.Padding(
-                          padding: const pw.EdgeInsets.all(8),
-                          child: pw.Text('')),
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text('TOTAL',
+                            style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold, fontSize: 10)),
+                      ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Text(
-                          '350,000.00',
+                          '3,050,000.00',
                           style: pw.TextStyle(
                               fontWeight: pw.FontWeight.bold, fontSize: 9),
                           textAlign: pw.TextAlign.right,
@@ -381,14 +388,12 @@ class _SalesReportPageState extends State<SalesReportPage> {
       );
       pdf.addPage(page);
 
-      // final pdfBytes = await pdf.save();
-
       await showDialog(
         context: context,
         builder: (context) => Dialog(
           child: Container(
             width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.8,
+            height: MediaQuery.of(context).size.height * 0.6,
             child: Column(
               children: [
                 Padding(
@@ -434,7 +439,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                           SnackBar(
                             content: Text('Error saving PDF: $e'),
                             backgroundColor: Colors.red,
-                            duration: Duration(seconds: 3),
+                            duration: const Duration(seconds: 3),
                           ),
                         );
                       }
@@ -447,7 +452,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                     canChangePageFormat: false,
                     canChangeOrientation: false,
                     maxPageWidth: 700,
-                    actions: [],
+                    actions: const [],
                     onPrinted: (context) => print('Document printed'),
                     onShared: (context) => print('Document shared'),
                     scrollViewDecoration: BoxDecoration(
@@ -623,8 +628,8 @@ class _SalesReportPageState extends State<SalesReportPage> {
               const SizedBox(height: 24),
               TextField(
                 controller: searchController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.search),
                   hintText: 'Search by location or business type',
                   border: OutlineInputBorder(),
                 ),
@@ -657,7 +662,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                   ],
                   rows: [
                     // Seethawaka Regency Section
-                    DataRow(cells: [
+                    const DataRow(cells: [
                       DataCell(Text('Seethawaka Regency')),
                       DataCell(Text('Alacart')),
                       DataCell(Text('10,000.00')),
@@ -666,7 +671,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                       DataCell(Text('10,000.00')),
                       DataCell(Text('10,000.00')),
                     ]),
-                    DataRow(cells: [
+                    const DataRow(cells: [
                       DataCell(Text('Seethawaka Regency')),
                       DataCell(Text('Delivery')),
                       DataCell(Text('10,000.00')),
@@ -675,7 +680,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                       DataCell(Text('10,000.00')),
                       DataCell(Text('10,000.00')),
                     ]),
-                    DataRow(cells: [
+                    const DataRow(cells: [
                       DataCell(Text('Seethawaka Regency')),
                       DataCell(Text('Room Service')),
                       DataCell(Text('10,000.00')),
@@ -684,7 +689,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                       DataCell(Text('10,000.00')),
                       DataCell(Text('10,000.00')),
                     ]),
-                    DataRow(cells: [
+                    const DataRow(cells: [
                       DataCell(Text('Seethawaka Regency')),
                       DataCell(Text('Food Truck')),
                       DataCell(Text('10,000.00')),
@@ -693,7 +698,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                       DataCell(Text('10,000.00')),
                       DataCell(Text('10,000.00')),
                     ]),
-                    DataRow(cells: [
+                    const DataRow(cells: [
                       DataCell(Text('Seethawaka Regency')),
                       DataCell(Text('Banquet')),
                       DataCell(Text('10,000.00')),
@@ -703,10 +708,10 @@ class _SalesReportPageState extends State<SalesReportPage> {
                       DataCell(Text('10,000.00')),
                     ]),
                     // Subtotal for Seethawaka
-                    DataRow(cells: [
-                      DataCell(Text('INCOME',
+                    const DataRow(cells: [
+                      DataCell(Text('INCOME TOTAL',
                           style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataCell(Text('TOTAL',
+                      DataCell(Text('',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                       DataCell(Text('50,000.00',
                           style: TextStyle(fontWeight: FontWeight.bold))),
@@ -723,7 +728,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                     DataRow(
                         cells: List.generate(7, (index) => DataCell(Text('')))),
                     // Avissawella Section
-                    DataRow(cells: [
+                    const DataRow(cells: [
                       DataCell(Text('Rest House Avissawella')),
                       DataCell(Text('Restaurant')),
                       DataCell(Text('10,000.00')),
@@ -732,7 +737,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                       DataCell(Text('10,000.00')),
                       DataCell(Text('10,000.00')),
                     ]),
-                    DataRow(cells: [
+                    const DataRow(cells: [
                       DataCell(Text('Rest House Avissawella')),
                       DataCell(Text('Bar')),
                       DataCell(Text('10,000.00')),
@@ -742,10 +747,10 @@ class _SalesReportPageState extends State<SalesReportPage> {
                       DataCell(Text('10,000.00')),
                     ]),
                     // Subtotal for Avissawella
-                    DataRow(cells: [
-                      DataCell(Text('INCOME',
+                    const DataRow(cells: [
+                      DataCell(Text('INCOME TOTAL',
                           style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataCell(Text('TOTAL',
+                      DataCell(Text('',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                       DataCell(Text('20,000.00',
                           style: TextStyle(fontWeight: FontWeight.bold))),
@@ -762,7 +767,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                     DataRow(
                         cells: List.generate(7, (index) => DataCell(Text('')))),
                     // Grand Total
-                    DataRow(cells: [
+                    const DataRow(cells: [
                       DataCell(Text('GRAND TOTAL',
                           style: TextStyle(fontWeight: FontWeight.bold))),
                       DataCell(Text('')),

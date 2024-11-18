@@ -2,6 +2,7 @@ import 'package:ci_new_app/pages/salesreport.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class DashboardPage extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Get.back(),
                     icon: const Icon(
                       Icons.arrow_back,
                       color: Colors.white,
@@ -73,12 +74,7 @@ class DashboardPage extends StatelessWidget {
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SalesReportPage(),
-                      ),
-                    );
+                    Get.to(() => const SalesReportPage());
                   },
                 ),
               ),

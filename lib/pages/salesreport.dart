@@ -8,6 +8,8 @@ import 'package:printing/printing.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:get/get.dart';
+
 
 class SalesReportPage extends StatefulWidget {
   const SalesReportPage({Key? key}) : super(key: key);
@@ -63,6 +65,24 @@ class _SalesReportPageState extends State<SalesReportPage> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF2A2359), // Header background color
+              onPrimary: Colors.white, // Header text color
+              onSurface: Colors.black, // Calendar text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF2A2359), // Button text color
+              ),
+            ),
+            dialogBackgroundColor: Colors.white, // Background color of the dialog
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -361,7 +381,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
       );
       pdf.addPage(page);
 
-      final pdfBytes = await pdf.save();
+      // final pdfBytes = await pdf.save();
 
       await showDialog(
         context: context,
@@ -470,7 +490,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Get.back(),
                   icon: const Icon(Icons.arrow_back,
                       color: Colors.white, size: 24),
                   label: const Text(

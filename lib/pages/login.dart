@@ -1,8 +1,7 @@
 import 'package:ci_new_app/pages/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-
+import 'package:get/get.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -39,24 +38,6 @@ class _LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     color: Colors.white, // If you want the logo to be white
                     fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // App Title
-                Text(
-                  'Income Report',
-                  style: GoogleFonts.poppins(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Track your business growth',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.grey[600],
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -112,13 +93,8 @@ class _LoginPageState extends State<LoginPage> {
                                 const Duration(seconds: 2),
                                     () {
                                   setState(() => _isLoading = false);
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const DashboardPage(),
-                                    ),
-                                  );
-                                },
+                                  Get.to(() => const DashboardPage());
+                                    },
                               );
                             },
                             style: ElevatedButton.styleFrom(

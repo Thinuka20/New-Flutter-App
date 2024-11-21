@@ -14,36 +14,10 @@ class DashboardPage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
           automaticallyImplyLeading: false,
-          toolbarHeight: 120,
+          toolbarHeight: 80,
           flexibleSpace: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Back Button Row
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: () => Get.back(),
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    label: const Text(
-                      'Back',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                    ),
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
-                ),
-              ),
-              // Title
               Text(
                 'Main Menu', // or 'Sales Report' for sales page
                 style: GoogleFonts.poppins(

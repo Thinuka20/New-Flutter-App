@@ -56,7 +56,8 @@ class SalesReportService {
   final String baseUrl;
 
   SalesReportService({String? baseUrl})
-      : baseUrl = baseUrl ?? 'http://124.43.70.220:7071/Reports',
+      : baseUrl = baseUrl ?? 'https://10.0.2.2:7153/api/Reports',
+      // : baseUrl = baseUrl ?? 'http://124.43.70.220:7071/Reports',
         _dio = Dio() {
     _dio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
@@ -326,7 +327,12 @@ class SalesReportPageState extends State<SalesReportPage> {
 
       // Add separator row
       rows.add(DataRow(
-        cells: List.generate(6, (index) => const DataCell(Text(''))),
+        cells: List.generate(6, (index) => const DataCell(
+            SizedBox(
+                height: 10, // Adjust this value to control the row height
+                child: Text('')
+            )
+        )),
       ));
 
       // Add to grand totals
@@ -373,6 +379,7 @@ class SalesReportPageState extends State<SalesReportPage> {
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4.landscape,
+          margin: const pw.EdgeInsets.symmetric(vertical: 50, horizontal: 60), // Adjust margin here
           build: (pw.Context context) {
             return [
               // Header
@@ -395,7 +402,7 @@ class SalesReportPageState extends State<SalesReportPage> {
                   ),
                 ],
               ),
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 10),
               pw.Text(
                 'SKYNET Pro Sales Reports',
                 style: pw.TextStyle(
@@ -441,7 +448,7 @@ class SalesReportPageState extends State<SalesReportPage> {
               ),
 
               // Footer
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 10),
               pw.Row(
                 mainAxisAlignment: pw
                     .MainAxisAlignment.spaceBetween, // Changed to spaceBetween

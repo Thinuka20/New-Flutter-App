@@ -20,7 +20,8 @@ class ApiService {
 
   ApiService._internal() {
     _dio = Dio(BaseOptions(
-      baseUrl: 'http://124.43.70.220:7071/Reports',
+      baseUrl: 'https://10.0.2.2:7153/api/Reports',
+      // baseUrl: 'http://124.43.70.220:7071/Reports',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       sendTimeout: const Duration(seconds: 30),
@@ -148,9 +149,9 @@ class RetryInterceptor extends Interceptor {
     required this.dio,
     this.retries = 3,
     this.retryDelays = const [
-      Duration(seconds: 1),
       Duration(seconds: 2),
-      Duration(seconds: 3),
+      Duration(seconds: 4),
+      Duration(seconds: 6),
     ],
   });
 

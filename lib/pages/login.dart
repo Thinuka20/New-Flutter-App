@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
-import 'dart:io';
 import 'package:dio/io.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dashboard.dart';
 
 class ApiService {
@@ -14,48 +16,91 @@ class ApiService {
 
   late final Dio _dio;
   final storage = const FlutterSecureStorage();
+  final connectivity = Connectivity();
 
   ApiService._internal() {
     _dio = Dio(BaseOptions(
-      baseUrl: 'https://10.0.2.2:7153/api/Reports',
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 3),
+      baseUrl: 'http://124.43.70.220:7071/Reports',
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
     ));
 
     _dio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
         final client = HttpClient();
-        // Note: Only use this in development. For production, properly handle certificates
         client.badCertificateCallback = (cert, host, port) => true;
         return client;
       },
     );
 
+    _dio.interceptors.add(RetryInterceptor(
+      dio: _dio,
+      retries: 3,
+      retryDelays: const [
+        Duration(seconds: 1),
+        Duration(seconds: 2),
+        Duration(seconds: 3),
+      ],
+    ));
+
     _dio.interceptors.add(InterceptorsWrapper(
       onError: (error, handler) async {
-        print('API Error: ${error.message}');
+        if (kDebugMode) {
+          print('API Error: ${error.message}');
+        }
         if (error.response?.statusCode == 401) {
-          // Handle unauthorized access
           await storage.delete(key: 'userId');
           Get.offAll(() => const LoginPage());
         }
         return handler.next(error);
       },
-      onRequest: (request, handler) {
-        print('API Request: ${request.uri}');
+      onRequest: (request, handler) async {
+        if (!await checkConnection()) {
+          return handler.reject(
+            DioException(
+              requestOptions: request,
+              error: 'No internet connection',
+              type: DioExceptionType.connectionError,
+            ),
+          );
+        }
+        if (kDebugMode) {
+          print('API Request: ${request.uri}');
+        }
         return handler.next(request);
       },
       onResponse: (response, handler) {
-        print('API Response: ${response.statusCode}');
+        if (kDebugMode) {
+          print('API Response: ${response.statusCode}');
+        }
         return handler.next(response);
       },
     ));
   }
 
+  Future<bool> checkConnection() async {
+    final connectivityResult = await connectivity.checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      return false;
+    }
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      return false;
+    }
+  }
+
   Future<Map<String, dynamic>> login(String passcode) async {
     try {
-      final response = await _dio.post('/login',
+      final response = await _dio.post(
+        '/login',
         data: {'passcode': passcode},
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          responseType: ResponseType.json,
+        ),
       );
       return response.data;
     } on DioException catch (e) {
@@ -64,11 +109,13 @@ class ApiService {
   }
 
   String _handleDioError(DioException error) {
+    if (error.error is String) return error.error.toString();
+
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return 'Connection timeout. Please check your internet connection.';
+        return 'Connection timeout. Please check your internet connection and try again.';
       case DioExceptionType.badResponse:
         switch (error.response?.statusCode) {
           case 400:
@@ -77,25 +124,84 @@ class ApiService {
             return 'Unauthorized access';
           case 404:
             return 'Service not found';
+          case 500:
+            return 'Server error occurred. Please try again later.';
           default:
             return 'Server error occurred';
         }
       case DioExceptionType.cancel:
         return 'Request cancelled';
+      case DioExceptionType.connectionError:
+        return 'Connection error. Please check your internet connection.';
       default:
-        return 'Network error occurred';
+        return 'Network error occurred. Please try again.';
     }
   }
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class RetryInterceptor extends Interceptor {
+  final Dio dio;
+  final int retries;
+  final List<Duration> retryDelays;
+
+  RetryInterceptor({
+    required this.dio,
+    this.retries = 3,
+    this.retryDelays = const [
+      Duration(seconds: 1),
+      Duration(seconds: 2),
+      Duration(seconds: 3),
+    ],
+  });
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  Future onError(DioException err, ErrorInterceptorHandler handler) async {
+    var extra = err.requestOptions.extra;
+    var retriesRemaining = (extra['retries'] ?? retries) as int;
+
+    if (retriesRemaining > 0 && _shouldRetry(err)) {
+      await Future.delayed(retryDelays[retries - retriesRemaining]);
+      retriesRemaining--;
+
+      try {
+        final options = Options(
+          method: err.requestOptions.method,
+          headers: err.requestOptions.headers,
+        );
+        options.extra = {...err.requestOptions.extra, 'retries': retriesRemaining};
+
+        final response = await dio.request(
+          err.requestOptions.path,
+          data: err.requestOptions.data,
+          queryParameters: err.requestOptions.queryParameters,
+          options: options,
+        );
+        return handler.resolve(response);
+      } catch (e) {
+        return super.onError(err, handler);
+      }
+    }
+    return super.onError(err, handler);
+  }
+
+  bool _shouldRetry(DioException error) {
+    return error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.connectionError ||
+        (error.type == DioExceptionType.badResponse &&
+            error.response?.statusCode == 500);
+  }
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  LoginPageState createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
   final _passcodeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _apiService = ApiService();
@@ -117,7 +223,6 @@ class _LoginPageState extends State<LoginPage> {
       final response = await _apiService.login(_passcodeController.text);
       final userId = response['userId'];
 
-      // Securely store the userId
       await _apiService.storage.write(
         key: 'userId',
         value: userId.toString(),
@@ -150,9 +255,6 @@ class _LoginPageState extends State<LoginPage> {
   String? _validatePasscode(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your passcode';
-    }
-    if (value.length < 6) {
-      return 'Passcode must be at least 6 characters';
     }
     return null;
   }
@@ -231,12 +333,7 @@ class _LoginPageState extends State<LoginPage> {
             TextFormField(
               controller: _passcodeController,
               obscureText: _obscurePasscode,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your passcode';
-                }
-                return null;
-              },
+              validator: _validatePasscode,
               decoration: InputDecoration(
                 labelText: 'Passcode',
                 prefixIcon: const Icon(Icons.lock_outline),

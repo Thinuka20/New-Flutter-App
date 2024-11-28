@@ -20,8 +20,8 @@ class ApiService {
 
   ApiService._internal() {
     _dio = Dio(BaseOptions(
-      baseUrl: 'https://10.0.2.2:7153/api/Reports',
-      // baseUrl: 'http://124.43.70.220:7071/Reports',
+      // baseUrl: 'https://10.0.2.2:7153/api/Reports',
+      baseUrl: 'http://124.43.70.220:7071/Reports',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       sendTimeout: const Duration(seconds: 30),

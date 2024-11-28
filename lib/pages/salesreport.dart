@@ -56,8 +56,8 @@ class SalesReportService {
   final String baseUrl;
 
   SalesReportService({String? baseUrl})
-      : baseUrl = baseUrl ?? 'https://10.0.2.2:7153/api/Reports',
-      // : baseUrl = baseUrl ?? 'http://124.43.70.220:7071/Reports',
+      // : baseUrl = baseUrl ?? 'https://10.0.2.2:7153/api/Reports',
+      : baseUrl = baseUrl ?? 'http://124.43.70.220:7071/Reports',
         _dio = Dio() {
     _dio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
